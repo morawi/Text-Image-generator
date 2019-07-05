@@ -26,30 +26,32 @@ text size, and some other parameters to prevent it from entering an infinite loo
 
 '''
 
-nimages = 3000
+nimages = 30
 dictionary_size = 88623
 upper_case_prob = 0.5
 use_single_font_per_image = True # not working yet!
-text_scale_distributoin = 4 # 1: will produce all text in the same sacle, if sizeX is equatl to sizeY, for each image; the higher the value, more scales are included
+text_scale_distributoin = 1 # 1: will produce all text in the same sacle, if sizeX is equatl to sizeY, for each image; the higher the value, more scales are included
 sizeX, sizeY = (256, 256)
 r_background, g_background,  b_background = (0,0,0)
-rMin, gMin, bMin = (10, 10, 10) # lower bound colors used to draw the text
-rMax, gMax, bMax = (30, 30 , 30) # lower bound colors used to draw the text
-min_num_words, max_num_words = (1, 4)
+rMin, gMin, bMin = (200, 200, 200) # lower bound colors used to draw the text
+rMax, gMax, bMax = (255, 255, 255) # lower bound colors used to draw the text
+min_num_words, max_num_words = (1,2)
 text_size_based_on_num_words = True
 if not text_size_based_on_num_words:
     min_txt_size, max_txt_size = (sizeX//16, sizeY//4) # (32, 8) # 
 upper_bound_bounding_box_to_x_ratio = 1 #0.75 
 generate_bounding_box_annotations = False
 font_dir = './fonts/' # folder containig TTF fonts, https://fonts.google.com/ can be used, just download the fonts to this folder
-annotation_folder = './Results/annotations/'
-out_image_folder = './Results/output_images/'
 seed_value = time.time()
 np.random.seed(int(seed_value))
 random.seed(int(seed_value))
 
 os.makedirs('./Results/%s' % 'output_images/', exist_ok=True)
 os.makedirs('./Results/%s' % 'annotations/', exist_ok=True)
+
+annotation_folder = './Results/annotations/'
+out_image_folder = './Results/output_images/'
+
 
 def text_cleaner (dirty_text):
     # CLEANS NOT WANTED CHARACTERES AND SENDS STRING IN LOWERCASE
@@ -113,12 +115,13 @@ for i in range(0, nimages):
             randomFont = random.randint(0, len(fontFiles)-1)
         font = ImageFont.truetype(font_dir + fontFiles[randomFont], text_size, encoding="unic")            
         bound = font.getsize(text)
-
-        while bound[0] > (sizeX*upper_bound_bounding_box_to_x_ratio):
-            text_size = random.randint(min_txt_size, max_txt_size)
-            randomFont = random.randint(0, len(fontFiles)-1)
+        text_size = random.randint(min_txt_size, max_txt_size)
+        randomFont = random.randint(0, len(fontFiles)-1)
+        while bound[0] > (sizeX*upper_bound_bounding_box_to_x_ratio):           
             font = ImageFont.truetype(font_dir + fontFiles[randomFont], text_size, encoding="unic")
             bound = font.getsize(text)
+            text_size = text_size - 1
+            
 
         if j == 0:
             posX = random.randint(0, (sizeX - bound[0]))
@@ -141,14 +144,13 @@ for i in range(0, nimages):
                 randomFont = random.randint(0, len(fontFiles)-1)
             font = ImageFont.truetype(font_dir + fontFiles[randomFont], text_size, encoding="unic")
             bound = font.getsize(text)
-            
-            while bound[0] > (sizeX * upper_bound_bounding_box_to_x_ratio):
-                text_size = random.randint(min_txt_size, max_txt_size)
-                if not (use_single_font_per_image and j!=0):                
-                    randomFont = random.randint(0, len(fontFiles)-1)
-                
+            text_size = random.randint(min_txt_size, max_txt_size)
+            if not (use_single_font_per_image and j!=0):                
+                randomFont = random.randint(0, len(fontFiles)-1)                
                 font = ImageFont.truetype(font_dir + fontFiles[randomFont], text_size, encoding="unic")
+            while bound[0] > (sizeX * upper_bound_bounding_box_to_x_ratio):                                
                 bound = font.getsize(text)
+                text_size = text_size - 1
 
             # Position of X
             posX = random.randint(0, (sizeX - bound[0]))
