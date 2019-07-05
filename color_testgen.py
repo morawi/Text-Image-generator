@@ -26,7 +26,7 @@ text size, and some other parameters to prevent it from entering an infinite loo
 
 '''
 
-nimages = 30
+nimages = 1000
 dictionary_size = 88623
 upper_case_prob = 0.5
 use_single_font_per_image = True # not working yet!
@@ -138,36 +138,26 @@ for i in range(0, nimages):
 
         verif = False
         
-        while verif == False:
-            text_size = random.randint(min_txt_size, max_txt_size)
-            if not (use_single_font_per_image and j!=0):                
-                randomFont = random.randint(0, len(fontFiles)-1)
+        text_size = random.randint(min_txt_size, max_txt_size)
+        if not (use_single_font_per_image and j!=0):                
+            randomFont = random.randint(0, len(fontFiles)-1)                
             font = ImageFont.truetype(font_dir + fontFiles[randomFont], text_size, encoding="unic")
-            bound = font.getsize(text)
-            text_size = random.randint(min_txt_size, max_txt_size)
-            if not (use_single_font_per_image and j!=0):                
-                randomFont = random.randint(0, len(fontFiles)-1)                
-                font = ImageFont.truetype(font_dir + fontFiles[randomFont], text_size, encoding="unic")
+        while verif == False:                        
             while bound[0] > (sizeX * upper_bound_bounding_box_to_x_ratio):                                
                 bound = font.getsize(text)
                 text_size = text_size - 1
-
-            # Position of X
-            posX = random.randint(0, (sizeX - bound[0]))
-
-            # Postion of Y
-            posY = random.randint(0, (sizeY - bound[1]))
+            
+            posX = random.randint(0, (sizeX - bound[0])) # Position of X            
+            posY = random.randint(0, (sizeY - bound[1])) # Postion of Y
 
             for k in range(0, len(coords)):
-
                 exist = area(coords[k], posX + bound[0], posX, posY + bound[1], posY)
-
-                if exist != None:
-                    verif = False
-                    break
+                
                 if exist == None:
-                    verif = True
-                    continue
+                    verif = True; continue # OK
+                else: 
+                    verif = False; break # not OK, keep on While verif looping
+                    
 
         coordinates = [posX, posX + bound[0], posY, posY + bound[1]]
         coords.append(coordinates)
