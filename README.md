@@ -4,7 +4,7 @@ A naive approach that generates random images and labels of text in simple color
 Dataset useful to train/test new prototypes of text detectors/recognizers. 
 
 
-![Samples](https://github.com/morawi/Text-Image-generator/tree/master/readme/txtGan.png)
+![Samples](../readme/txtGan.png)
 
 
 
